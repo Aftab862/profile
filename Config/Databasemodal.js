@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const profileSchema = mongoose.Schema({
     name: String,
     job: String,
@@ -26,15 +27,9 @@ const socialSchema = mongoose.Schema({
 
 })
 
-// const socialusersSchema = mongoose.Schema({
-//     userid: String,
-//     linkid: String
-// })
-
 
 const sociallinks = mongoose.model("sociallinks", socialSchema)
 const profiledb = mongoose.model("profiles", profileSchema);
-// const socialusers = mongoose.model("socialusers", socialusersSchema);
 
 
 module.exports = { profiledb, sociallinks }

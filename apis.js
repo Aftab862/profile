@@ -225,13 +225,14 @@
 
 require('./Config/config')
 const { sociallinks, profiledb } = require('./Config/Databasemodal')
-
 var express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const multer = require('multer')
+const multer = require('multer');
 var app = express();
-var port = process.env.PORT || 8000;
+const dotenv = require('dotenv')
+var PORT = process.env.PORT;
+dotenv.config({path:"./config.env"})
 
 // enable CORS
 // app.use(function(req, res, next) {
@@ -241,90 +242,83 @@ var port = process.env.PORT || 8000;
 //  });
 
 
- app.use(cors())
+app.use(cors())
 // parse application/json
 // app.use(bodyParser.json());
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 
-// serving static files
-app.use('/uploads', express.static('uploads'));
+// // serving static files
+// app.use('/uploads', express.static('uploads'));
 
-// request handlers
-app.get('/', (req, res) => {
-   res.send('Node js file upload rest apis');
-});
+// // request handlers
+// app.get('/', (req, res) => {
+//    res.send('Node js file upload rest apis');
+// });
 
-// handle storage using multer
-var storage = multer.diskStorage({
-   destination: function (req, file, cb) {
-      cb(null, 'uploads');
-   },
-   filename: function (req, file, cb) {
-      cb(null, file.originalname);
-   }
-});
-var upload = multer({ storage: storage });
+// // handle storage using multer
+// var storage = multer.diskStorage({
+//    destination: function (req, file, cb) {
+//       cb(null, 'uploads');
+//    },
+//    filename: function (req, file, cb) {
+//       cb(null, file.originalname);
+//    }
+// });
+// var upload = multer({ storage: storage });
 
 
-app.post('/upload-file', upload.single('dataFile'), async (req, res, next) => {
-   const imgUrl = req.file.path;
-   const { name, value, pid } = req.body
-   if (imgUrl) {
-      console.log("imgpath", imgUrl, "Pid", pid, name)
-      // res.send({ message: 'File uploaded successfully.', imgUrl });
-      const result = await sociallinks.insertMany({ name: name, value: value, imgUrl: imgUrl, pid: pid });
-      if (result)
-         res.end(JSON.stringify({ status: true, message: result }));
-   }
-});
+// app.post('/upload-file', upload.single('dataFile'), async (req, res, next) => {
+//    const imgUrl = req.file.path;
+//    const { name, value, pid } = req.body
+//    if (imgUrl) {
+//       console.log("imgpath", imgUrl, "Pid", pid, name)
+//       // res.send({ message: 'File uploaded successfully.', imgUrl });
+//       const result = await sociallinks.insertMany({ name: name, value: value, imgUrl: imgUrl, pid: pid });
+//       if (result)
+//          res.end(JSON.stringify({ status: true, message: result }));
+//    }
+// });
 
-app.put('/updatelinks/:linkid', async (req, res) => {
-   const { linkid } = req.params
-   const { value } = req.body
+// app.put('/updatelinks/:linkid', async (req, res) => {
+//    const { linkid } = req.params
+//    const { value } = req.body
 
-   const result = await sociallinks.findByIdAndUpdate({ _id: linkid }, {
-      value: value
-   })
-   if (result) {
-      res.end(JSON.stringify({ status: true, message: 'Link save sucessfully' }));
-   }
-})
+//    const result = await sociallinks.findByIdAndUpdate({ _id: linkid }, {
+//       value: value
+//    })
+//    if (result) {
+//       res.end(JSON.stringify({ status: true, message: 'Link save sucessfully' }));
+//    }
+// })
 
-app.delete("/deletelink/:id", async (req, res) => {
-   const result = await sociallinks.findOneAndDelete(req.params)
-   if (result) {
-      res.end(JSON.stringify({ status: true, message: 'Link deleted' }));
-   }
-   else {
-      res.end(JSON.stringify({ status: false, message: 'Error' }));
+// app.delete("/deletelink/:id", async (req, res) => {
+//    const result = await sociallinks.findOneAndDelete(req.params)
+//    if (result) {
+//       res.end(JSON.stringify({ status: true, message: 'Link deleted' }));
+//    }
+//    else {
+//       res.end(JSON.stringify({ status: false, message: 'Error' }));
 
-   }
-})
+//    }
+// })
 
 app.get("/links/:id", async (req, res) => {
    const { id } = req.params
    // console.log(id.slice(0, 24))
-   const allSocial = await sociallinks.find({ pid: id.slice(0, 24) })
+   const allSocial = await sociallinks?.find({ pid: id.slice(0, 24) })
    res.send(allSocial)
 })
-
 
 app.get("/profile/:id", async (req, res) => {
    const { id } = req.params
    const profile = await profiledb.findById({ _id: id })
    res.send(profile)
-   // if (abc) {
-   //    const data = await sociallinks.find({ pid: id })
-   //    res.end(JSON.stringify({ status: true, message:data }));
-   // }
-   // else{
-   //    res.end(JSON.stringify({ status: false, message: 'Error' }));
-   // }
+ 
 })
 
 
-app.listen(port, () => {
-   console.log('Server started on: ' + port);
+app.listen(PORT, () => {
+   console.log(` Server started on port: ${PORT}`);
 });
