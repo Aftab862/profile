@@ -233,6 +233,7 @@ var app = express();
 const dotenv = require('dotenv')
 var PORT = process.env.PORT;
 dotenv.config({path:"./config.env"})
+const hostname='0.0.0.0';
 
 // enable CORS
 // app.use(function(req, res, next) {
@@ -319,8 +320,8 @@ app.get("/profile/:id", async (req, res) => {
 })
 
 
-app.listen(PORT, () => {
-   console.log(` Server started on port: ${PORT}`);
+app.listen(PORT,hostname, () => {
+   console.log(` Server running at  http://${hostname}:${PORT}/`);
    
 
 });
